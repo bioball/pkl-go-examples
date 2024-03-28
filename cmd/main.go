@@ -16,7 +16,8 @@
 package main
 
 import (
-	"context"
+	"github.com/apple/pkl-go-examples/baked"
+	"github.com/apple/pkl-go/pkl"
 	"log/slog"
 	"os"
 
@@ -26,11 +27,10 @@ import (
 )
 
 func main() {
-	cfg, err := appconfig.LoadFromPath(context.Background(), "pkl/dev/config.pkl")
-	if err != nil {
+	var cfg *appconfig.AppConfig
+	if err := pkl.Unmarshal(baked.DevConfig, &cfg); err != nil {
 		panic(err)
 	}
-
 	var programLevel = new(slog.LevelVar)
 
 	switch cfg.LogLevel {
@@ -47,7 +47,7 @@ func main() {
 
 	slog.Info("Starting server", "port", cfg.Port)
 
-	if err = internal.NewServer(cfg).Run(); err != nil {
+	if err := internal.NewServer(cfg).Run(); err != nil {
 		panic(err)
 	}
 }
