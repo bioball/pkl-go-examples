@@ -23,10 +23,20 @@ import (
 	"github.com/apple/pkl-go-examples/gen/appconfig"
 	"github.com/apple/pkl-go-examples/gen/appconfig/loglevel"
 	"github.com/apple/pkl-go-examples/internal"
+	pklconf "github.com/apple/pkl-go-examples/pkl"
+	"github.com/apple/pkl-go/pkl"
 )
 
 func main() {
-	cfg, err := appconfig.LoadFromPath(context.Background(), "pkl/dev/config.pkl")
+	ctx := context.Background()
+	evaluator, err := pkl.NewEvaluator(ctx, pkl.PreconfiguredOptions, pkl.WithFs(pklconf.PklFiles, "embed"))
+	if err != nil {
+		panic(err)
+	}
+	cfg, err := appconfig.Load(ctx, evaluator, pkl.UriSource("embed:/dev/config.pkl"))
+	if err != nil {
+		panic(err)
+	}
 	if err != nil {
 		panic(err)
 	}
